@@ -7,7 +7,7 @@ const MY_SECRET = process.env.MY_API_KEY;
 
 let tempDatabase = {};
 
-// POST: /save
+// POST: /save (STAY PROTECTED)
 app.post('/save', (req, res) => {
     const apiKey = req.headers['x-api-key'];
     if (!apiKey || apiKey !== MY_SECRET) {
@@ -24,13 +24,9 @@ app.post('/save', (req, res) => {
     res.status(200).send("Success");
 });
 
-// GET: /get-avatar/:id
+// GET: /get-avatar/:id (NOW PUBLIC - NO KEY REQUIRED)
 app.get('/get-avatar/:id', (req, res) => {
-    const apiKey = req.headers['x-api-key']; // Added key check for GET too
-    if (!apiKey || apiKey !== MY_SECRET) {
-        return res.status(403).send("Invalid Key");
-    }
-
+    // Key check removed here so other games can load data
     const userId = req.params.id;
     const data = tempDatabase[userId];
     
