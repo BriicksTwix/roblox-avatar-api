@@ -4,8 +4,7 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 10000;
 
-// This pulls the key from Render's private "Environment" settings
-// It is NOT visible to anyone looking at your GitHub
+// This line tells the code to look at the "Environment" settings you just changed
 const MY_SECRET = process.env.MY_API_KEY; 
 
 let tempDatabase = {};
@@ -13,9 +12,9 @@ let tempDatabase = {};
 app.post('/save', (req, res) => {
     const apiKey = req.headers['x-api-key'];
     
-    // Safety check: make sure the key exists and matches
+    // This compares the header from Roblox to the Secret in Render
     if (!apiKey || apiKey !== MY_SECRET) {
-        console.log("Key mismatch or missing key!");
+        console.log("Unauthorized Access Attempt");
         return res.status(403).send("Forbidden");
     }
 
@@ -31,4 +30,4 @@ app.get('/get-avatar/:id', (req, res) => {
     else res.status(404).send("Not Found");
 });
 
-app.listen(PORT, '0.0.0.0', () => console.log(`Server running securely`));
+app.listen(PORT, '0.0.0.0', () => console.log(`Server live and secure`));
