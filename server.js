@@ -3,39 +3,32 @@ const app = express();
 app.use(express.json());
 
 const PORT = process.env.PORT || 10000;
+
+// This pulls the key from Render's private "Environment" settings
+// It is NOT visible to anyone looking at your GitHub
 const MY_SECRET = process.env.MY_API_KEY; 
 
-// Simple in-memory storage
 let tempDatabase = {};
 
-// THE SAVE ROUTE
 app.post('/save', (req, res) => {
-    // Check the "x-api-key" header
     const apiKey = req.headers['x-api-key'];
     
+    // Safety check: make sure the key exists and matches
     if (!apiKey || apiKey !== MY_SECRET) {
-        console.log("Unauthorized attempt blocked.");
-        return res.status(403).send("Forbidden: Invalid API Key");
+        console.log("Key mismatch or missing key!");
+        return res.status(403).send("Forbidden");
     }
 
     const { userId, avatarData } = req.body;
-    if (!userId) return res.status(400).send("Missing UserId");
-
     tempDatabase[userId] = avatarData;
-    console.log(`Successfully saved avatar for User: ${userId}`);
-    res.status(200).send("Saved Successfully");
+    console.log(`Saved User: ${userId}`);
+    res.status(200).send("Success");
 });
 
-// THE GET ROUTE (For other games to fetch the avatar)
 app.get('/get-avatar/:id', (req, res) => {
     const data = tempDatabase[req.params.id];
-    if (data) {
-        res.json(data);
-    } else {
-        res.status(404).send("No avatar found for this ID");
-    }
+    if (data) res.json(data);
+    else res.status(404).send("Not Found");
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is live on port ${PORT}`);
-});
+app.listen(PORT, '0.0.0.0', () => console.log(`Server running securely`));
